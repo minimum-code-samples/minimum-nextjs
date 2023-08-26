@@ -1,6 +1,3 @@
-$font-family-base: 'Work Sans', sans-serif;
-$headings-font-family: 'Work Sans', sans-serif;
-
 $p000: hsl(168, 45%, 98%);
 $p100: hsl(164, 52%, 95%);
 $p200: hsl(164, 52%, 81%);
@@ -89,3 +86,21 @@ $prefix: app-;
 $border-radius: 0.25rem;
 
 $btn-disabled-opacity: 0.4;
+
+:root {
+  --#{$prefix}-h1-fontsize: calc(#{$font-size-base} * 2.5);
+  --#{$prefix}-h2-fontsize: calc(#{$font-size-base} * 2);
+  --#{$prefix}-h3-fontsize: calc(#{$font-size-base} * 1.75);
+  --#{$prefix}-h4-fontsize: calc(#{$font-size-base} * 1.5);
+  --#{$prefix}-h5-fontsize: calc(#{$font-size-base} * 1.375);
+  --#{$prefix}-h6-fontsize: calc(#{$font-size-base} * 1.125);
+
+  @include media-breakpoint-up(md) {
+    --#{$prefix}-h1-fontsize: calc(#{$font-size-base} * 3);
+    --#{$prefix}-h2-fontsize: calc(#{$font-size-base} * 2.5);
+    --#{$prefix}-h3-fontsize: calc(#{$font-size-base} * 2);
+    --#{$prefix}-h4-fontsize: calc(#{$font-size-base} * 1.75);
+    --#{$prefix}-h5-fontsize: calc(#{$font-size-base} * 1.5);
+    --#{$prefix}-h6-fontsize: calc(#{$font-size-base} * 1.25);
+  }
+}
