@@ -1,0 +1,63 @@
+$font-family-base: 'Work Sans', sans-serif;
+$headings-font-family: 'Work Sans', sans-serif;
+
+$p000: hsl(168, 45%, 98%);
+$p100: hsl(164, 52%, 95%);
+$p200: hsl(164, 52%, 81%);
+$p300: hsl(165, 52%, 73%);
+$p400: hsl(165, 52%, 63%);
+$p500: hsl(165, 57%, 48%);
+$p600: hsl(164, 76%, 39%);
+$p700: hsl(163, 100%, 33%);
+$p800: hsl(165, 57%, 35%);
+$p900: hsl(165, 57%, 25%);
+$s000: hsl(343, 100%, 99%);
+$s100: hsl(351, 100%, 95%);
+$s200: hsl(350, 100%, 88%);
+$s300: hsl(350, 100%, 83%);
+$s400: hsl(350, 100%, 77%);
+$s500: hsl(347, 100%, 71%);
+$s600: hsl(350, 100%, 67%);
+$s700: hsl(351, 100%, 57%);
+$s800: hsl(350, 48%, 45%);
+$s900: hsl(350, 48%, 29%);
+$g000: hsl(0, 0%, 98%);
+$g100: hsl(180, 2%, 90%);
+$g200: hsl(160, 3%, 78%);
+$g300: hsl(165, 3%, 69%);
+$g400: hsl(160, 3%, 57%);
+$g500: hsl(158, 5%, 47%);
+$g600: hsl(160, 4%, 39%);
+$g700: hsl(156, 7%, 28%);
+$g800: hsl(156, 5%, 18%);
+$g900: hsl(0, 0%, 1%);
+
+// $swatch-grey: (
+//   'g000': $g000,
+//   'g100': $g100,
+//   'g200': $g200,
+//   'g300': $g300,
+//   'g400': $g400,
+//   'g500': $g500,
+//   'g600': $g600,
+//   'g700': $g700,
+//   'g800': $g800,
+//   'g900': $g900,
+// );
+
+// Sets the overall tone.
+$primary: $p500;
+$secondary: $s500;
+$body-bg: $g000;
+$body-color: $g700;
+$text-muted: $g500;
+
+// Sets the link colour.
+$link-color: $s600;
+$link-decoration: none;
+
+// Customise the form elements.
+$input-placeholder-color: $g300;
+$input-btn-focus-color-opacity: 0.125;
+
+$prefix: app-;
