@@ -1,3 +1,18 @@
+/* Make the footer stay at the bottom. */
+body {
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 8rem;
+}
+
+footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Make the text size dynamic. */
 p {
   font-size: 1rem;
 
