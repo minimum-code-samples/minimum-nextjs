@@ -39,23 +39,23 @@
 
 // Update the colours and invoke the API.
 $utilities: map-merge(
-  $utilities,
-  (
-    'color':
-      map-merge(
-        map-get($utilities, 'color'),
-        (
-          values: map-merge(map-get(map-get($utilities, 'color'), 'values'), ($theme-colors)),
-        )
-      ),
-    'background-color':
-      map-merge(
-        map-get($utilities, 'background-color'),
-        (
-          values: map-merge(map-get(map-get($utilities, 'background-color'), 'values'), ($theme-colors)),
-        )
-      ),
-  )
+	$utilities,
+	(
+		'color':
+			map-merge(
+				map-get($utilities, 'color'),
+				(
+					values: map-merge(map-get(map-get($utilities, 'color'), 'values'), ($theme-colors)),
+				)
+			),
+		'background-color':
+			map-merge(
+				map-get($utilities, 'background-color'),
+				(
+					values: map-merge(map-get(map-get($utilities, 'background-color'), 'values'), ($theme-colors)),
+				)
+			),
+	)
 );
 
 // 5. Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
