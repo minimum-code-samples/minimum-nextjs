@@ -1,4 +1,5 @@
 {
+	"editor.tabSize": 2,
 	"editor.stickyScroll.enabled": true,
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
