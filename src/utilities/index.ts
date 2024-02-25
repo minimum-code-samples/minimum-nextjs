@@ -8,7 +8,58 @@ import { CookieValueTypes, deleteCookie, getCookie, setCookie } from 'cookies-ne
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { COOKIE_FLASH, SEP } from '@src/constants';
-import { ALERT_VARIANTS, AlertVariant, FlashMessage } from '@src/types';
+import { ALERT_VARIANTS, AlertVariant, FlashMessage, UnauthenticatedError } from '@src/types';
+
+/**
+ * Wrapper function around `fetch` to make requests with JSON payloads.
+ *
+ * This function sets a default Content-type header with the value `application/json`.
+ *
+ * @param resource - The URL endpoint to make the AJAX request to.
+ * @param options - The options to forward to `fetch`. To set headers, use the `headers` key for this parameter.
+ */
+export async function fetchJson(resource: string, options?: any): Promise<{ status: number; payload: any }> {
+	const headers = new Headers();
+	headers.set('content-type', 'application/json');
+
+	if (options?.headers) {
+		if (options.headers instanceof Headers) {
+			options.headers.forEach((v: string, k: string) => {
+				headers.set(k, v);
+			});
+		} else {
+			for (const [k, v] of Object.entries(options.headers)) {
+				if (typeof k === 'string' && typeof v === 'string') {
+					headers.set(k, v);
+				}
+			}
+		}
+	}
+
+	let opts = Object.assign({}, options, { headers });
+
+	const resp = await fetch(resource, opts);
+
+	if (resp.status === 204) {
+		// 204 is generally used when the response is unexpectedly empty.
+		return {
+			status: resp.status,
+			payload: null,
+		};
+	}
+
+	const payload = await resp.json();
+
+	if (resp.status === 401 || resp.status === 403) {
+		throw new UnauthenticatedError(payload.data?.error?.name);
+	}
+
+	// Returns other statuses as-is along with the payload.
+	return {
+		status: resp.status,
+		payload,
+	};
+}
 
 /**
  * Gets the "flash" cookie to display messages for.
@@ -87,6 +138,52 @@ export function parseFlashString(value: string): FlashMessage {
 		message,
 		variant: _v,
 	};
+}
+
+/**
+ * Specialized function to convert Date and undefined properties for serialization to the front-end code.
+ *
+ * Reference: https://www.reddit.com/r/nextjs/comments/uxnpbp/serialising_dates_in_getserversideprops/?rdt=62192
+ *
+ * @param from - The arbitrary object to convert.
+ */
+export function serializeBoundary(from: Object | null | undefined): any {
+	const to: any = {};
+
+	if (
+		typeof from === 'string' ||
+		typeof from === 'number' ||
+		typeof from === 'boolean' ||
+		typeof from === 'bigint' ||
+		typeof from === 'symbol' ||
+		from === null ||
+		from === undefined
+	) {
+		return from;
+	}
+	// Else, 'object'.
+
+	if (from instanceof Date) {
+		return from.toISOString();
+	}
+
+	if (Array.isArray(from)) {
+		return from.map((f) => serializeBoundary(f));
+	}
+
+	for (const [k, v] of Object.entries(from)) {
+		if (v instanceof Date) {
+			to[k] = v.toISOString();
+		} else if (Array.isArray(v)) {
+			to[k] = v.map((vee) => serializeBoundary(vee));
+		} else if (typeof v === 'object') {
+			to[k] = serializeBoundary(v);
+		} else {
+			to[k] = v;
+		}
+	}
+
+	return to;
 }
 
 /**

@@ -25,3 +25,24 @@ export interface FlashMessage {
 	message: string;
 	variant: AlertVariant;
 }
+
+/**
+ * Describes an error with failed authentication.
+ */
+export class UnauthenticatedError extends Error {
+	status: number = 0;
+
+	constructor(message: string) {
+		super();
+		this.name = 'UnauthenticatedError';
+
+		// Maintains proper stack trace for where the error was thrown (only available on V8)
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, UnauthenticatedError);
+		}
+
+		if (message) {
+			this.message = message;
+		}
+	}
+}
