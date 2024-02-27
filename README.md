@@ -13,8 +13,10 @@ The template features the following:
 - Cookie access capability with flash message functionality.
 - Function for serializing objects containing Date objects.
 - Wrapper function around `fetch` to streamline the retrieval of JSON payloads.
+- Server logging facility.
 
 Below are the defaults that should be changed for a new project:
 
 - Headings and body font: Work Sans (_src/styles/customization.scss_)
 - Favicon (_src/public/favicon.png_, _src/public/favicon.svg_)
+- Logging details for _.env.development_ and _.env.production_.

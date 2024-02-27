@@ -2,9 +2,14 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Head from 'next/head';
 import Alert from 'react-bootstrap/Alert';
 
+import { logger } from '@src/lib/server/logger';
 import { getFlashCookie } from '@src/utilities';
 
+const _name = 'src/pages/index';
+
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
+	logger.trace(`(${_name}) Page requested.`);
+
 	const flash = getFlashCookie(context.req, context.res);
 
 	return {
