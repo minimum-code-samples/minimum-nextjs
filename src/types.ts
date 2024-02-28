@@ -26,6 +26,22 @@ export interface FlashMessage {
 	variant: AlertVariant;
 }
 
+interface HttpPayloadData {
+	data: any;
+	status: number;
+}
+
+interface HttpPayloadMessage {
+	completed: boolean;
+	message: string;
+	status: number;
+}
+
+/**
+ * The payload to send for HTTP responses.
+ */
+export type HttpPayload = HttpPayloadData | HttpPayloadMessage | (HttpPayloadData & HttpPayloadMessage);
+
 /**
  * Describes an error with failed authentication.
  */

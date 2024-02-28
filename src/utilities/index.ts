@@ -11,6 +11,23 @@ import { COOKIE_FLASH, SEP } from '@src/constants';
 import { ALERT_VARIANTS, AlertVariant, FlashMessage, UnauthenticatedError } from '@src/types';
 
 /**
+ * Helper function to extract the JWT from a Authorization header.
+ *
+ * @param bearer - The authorization header from the HTTP request.
+ * @returns Returns null if the bearer string is empty or does not start with "bearer " (case-insensitive).
+ */
+export function extractJwt(bearer: string | null | undefined): string | null {
+	const re = /^bearer /i;
+
+	if (!bearer || !re.test(bearer)) {
+		return null;
+	}
+	const [_, jwt] = bearer.trim().split(' ');
+
+	return jwt ? jwt : null;
+}
+
+/**
  * Wrapper function around `fetch` to make requests with JSON payloads.
  *
  * This function sets a default Content-type header with the value `application/json`.

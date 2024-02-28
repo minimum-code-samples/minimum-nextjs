@@ -26,13 +26,19 @@ if (!_isPinoLevel(ll)) {
 
 const logLevel: Level = ll as Level;
 
-const streams: StreamEntry[] = [{ level: logLevel, stream: pinoPretty({ colorize: true }) }];
+// Change the file opening to be synchronous when running in command line.
+let sync = false;
+if (process.env.APP_ENV === 'development') {
+	sync = true;
+}
+
+const streams: StreamEntry[] = [{ level: logLevel, stream: pinoPretty({ colorize: true, sync: true }) }];
 
 const logFile = process.env.PINO_LOG_FILE;
 if (logFile) {
 	streams.push({
 		level: logLevel,
-		stream: pino.destination(`${logDir}/${logFile}`),
+		stream: pino.destination({ dest: `${logDir}/${logFile}`, sync }),
 	});
 }
 
@@ -40,7 +46,7 @@ const errFile = process.env.PINO_ERROR_FILE;
 if (errFile) {
 	streams.push({
 		level: 'error',
-		stream: pino.destination(`${logDir}/${errFile}`),
+		stream: pino.destination({ path: `${logDir}/${errFile}`, sync }),
 	});
 }
 
