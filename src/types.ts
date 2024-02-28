@@ -27,7 +27,7 @@ export interface FlashMessage {
 }
 
 interface HttpPayloadData {
-	data: any;
+	payload: any;
 	status: number;
 }
 

@@ -10,7 +10,7 @@ export default function Document() {
 			<link rel="preconnect" href="https://fonts.gstatic.com" />
 			<link
 				rel="stylesheet"
-				href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,200;0,400;0,600;1,400&display=swap"
+				href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
 			/>
 
 			<body>

@@ -8,7 +8,7 @@ import { CookieValueTypes, deleteCookie, getCookie, setCookie } from 'cookies-ne
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { COOKIE_FLASH, SEP } from '@src/constants';
-import { ALERT_VARIANTS, AlertVariant, FlashMessage, UnauthenticatedError } from '@src/types';
+import { ALERT_VARIANTS, AlertVariant, FlashMessage, HttpPayload, UnauthenticatedError } from '@src/types';
 
 /**
  * Helper function to extract the JWT from a Authorization header.
@@ -35,7 +35,7 @@ export function extractJwt(bearer: string | null | undefined): string | null {
  * @param resource - The URL endpoint to make the AJAX request to.
  * @param options - The options to forward to `fetch`. To set headers, use the `headers` key for this parameter.
  */
-export async function fetchJson(resource: string, options?: any): Promise<{ status: number; payload: any }> {
+export async function fetchJson(resource: string, options?: any): Promise<HttpPayload> {
 	const headers = new Headers();
 	headers.set('content-type', 'application/json');
 
