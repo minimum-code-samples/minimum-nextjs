@@ -34,8 +34,9 @@ export function extractJwt(bearer: string | null | undefined): string | null {
  *
  * @param resource - The URL endpoint to make the AJAX request to.
  * @param options - The options to forward to `fetch`. To set headers, use the `headers` key for this parameter.
+ * @returns Returns null if the status is 204. Otherwise returns the JSON response body.
  */
-export async function fetchJson(resource: string, options?: any): Promise<HttpPayload> {
+export async function fetchJson(resource: string, options?: any) {
 	const headers = new Headers();
 	headers.set('content-type', 'application/json');
 
@@ -59,10 +60,7 @@ export async function fetchJson(resource: string, options?: any): Promise<HttpPa
 
 	if (resp.status === 204) {
 		// 204 is generally used when the response is unexpectedly empty.
-		return {
-			status: resp.status,
-			payload: null,
-		};
+		return null;
 	}
 
 	const payload = await resp.json();
@@ -72,10 +70,7 @@ export async function fetchJson(resource: string, options?: any): Promise<HttpPa
 	}
 
 	// Returns other statuses as-is along with the payload.
-	return {
-		status: resp.status,
-		payload,
-	};
+	return payload;
 }
 
 /**
