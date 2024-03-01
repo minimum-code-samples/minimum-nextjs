@@ -3,5 +3,6 @@
 	"editor.stickyScroll.enabled": true,
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
-	"editor.indentSize": "tabSize"
+	"editor.indentSize": "tabSize",
+	"editor.wordWrapColumn": 80
 }
