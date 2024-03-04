@@ -4,11 +4,22 @@
  * @module @src/utilities
  */
 
-import { CookieValueTypes, deleteCookie, getCookie, setCookie } from 'cookies-next';
+import {
+	CookieValueTypes,
+	deleteCookie,
+	getCookie,
+	setCookie,
+} from 'cookies-next';
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { COOKIE_FLASH, SEP } from '@src/constants';
-import { ALERT_VARIANTS, AlertVariant, FlashMessage, HttpPayload, UnauthenticatedError } from '@src/types';
+import {
+	ALERT_VARIANTS,
+	AlertVariant,
+	FetchError,
+	FlashMessage,
+	UnauthenticatedError,
+} from '@src/types';
 
 /**
  * Helper function to extract the JWT from a Authorization header.
@@ -35,6 +46,8 @@ export function extractJwt(bearer: string | null | undefined): string | null {
  * @param resource - The URL endpoint to make the AJAX request to.
  * @param options - The options to forward to `fetch`. To set headers, use the `headers` key for this parameter.
  * @returns Returns null if the status is 204. Otherwise returns the JSON response body.
+ * @throws {UnauthenticatedError} Throws this error if the response code is either 401 or 403. This has a higher precedence than FetchError.
+ * @throws {FetchError} Throws this error if the response code is non 2xx.
  */
 export async function fetchJson(resource: string, options?: any) {
 	const headers = new Headers();
@@ -69,6 +82,10 @@ export async function fetchJson(resource: string, options?: any) {
 		throw new UnauthenticatedError(payload.data?.error?.name);
 	}
 
+	if (resp.status >= 300) {
+		throw new FetchError(`response status is not 2xx`, resp.status, payload);
+	}
+
 	// Returns other statuses as-is along with the payload.
 	return payload;
 }
@@ -82,7 +99,10 @@ export async function fetchJson(resource: string, options?: any) {
  * @param res - The outgoing response object from `context`. Optional, but must be specified for the server.
  * @returns Returns an object with the keys `message` and `variant`. If there is no such cookie, null is returned.
  */
-export function getFlashCookie(req?: IncomingMessage, res?: ServerResponse): FlashMessage | null {
+export function getFlashCookie(
+	req?: IncomingMessage,
+	res?: ServerResponse
+): FlashMessage | null {
 	let flash: CookieValueTypes = '';
 
 	if (req && res) {
@@ -123,7 +143,10 @@ export function isAlertVariant(s: string): s is AlertVariant {
  * @param message - The message to display.
  * @param variant - The variant of message to display. Default 'info'.
  */
-export function makeFlashMesage(message: string, variant: AlertVariant = 'info'): string {
+export function makeFlashMesage(
+	message: string,
+	variant: AlertVariant = 'info'
+): string {
 	return `${message}${SEP}${variant}`;
 }
 

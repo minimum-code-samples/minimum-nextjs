@@ -7,7 +7,16 @@
 /**
  * The categories of alert.
  */
-export const ALERT_VARIANTS = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
+export const ALERT_VARIANTS = [
+	'primary',
+	'secondary',
+	'success',
+	'danger',
+	'warning',
+	'info',
+	'light',
+	'dark',
+];
 export type AlertVariant = (typeof ALERT_VARIANTS)[number];
 
 /**
@@ -16,6 +25,26 @@ export type AlertVariant = (typeof ALERT_VARIANTS)[number];
 export interface AlertBody {
 	body: JSX.Element;
 	variant: AlertVariant;
+}
+
+/**
+ * The error class to throw when a HTTP response code is non-2xx.
+ */
+export class FetchError extends Error {
+	status: number = 0;
+	body: any;
+
+	constructor(message: string, status: number, body?: any) {
+		super();
+		this.name = 'FetchError';
+
+		this.message = message;
+		this.status = status;
+
+		if (body) {
+			this.body = body;
+		}
+	}
 }
 
 /**
@@ -40,7 +69,10 @@ interface HttpPayloadMessage {
 /**
  * The payload to send for HTTP responses.
  */
-export type HttpPayload = HttpPayloadData | HttpPayloadMessage | (HttpPayloadData & HttpPayloadMessage);
+export type HttpPayload =
+	| HttpPayloadData
+	| HttpPayloadMessage
+	| (HttpPayloadData & HttpPayloadMessage);
 
 /**
  * Describes an error with failed authentication.
@@ -57,8 +89,6 @@ export class UnauthenticatedError extends Error {
 			Error.captureStackTrace(this, UnauthenticatedError);
 		}
 
-		if (message) {
-			this.message = message;
-		}
+		this.message = message;
 	}
 }
