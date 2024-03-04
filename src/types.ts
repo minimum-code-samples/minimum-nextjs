@@ -29,6 +29,8 @@ export interface AlertBody {
 
 /**
  * The error class to throw when a HTTP response code is non-2xx.
+ *
+ * The `toString()` method is overridden to return the status code. The `body` member is also returned if available.
  */
 export class FetchError extends Error {
 	status: number = 0;
@@ -44,6 +46,16 @@ export class FetchError extends Error {
 		if (body) {
 			this.body = body;
 		}
+	}
+
+	toString(): string {
+		if (!this.body) {
+			return `${this.name}: ${this.message} (${this.status})`;
+		}
+
+		return `${this.name}: ${this.message} (${this.status}:${JSON.stringify(
+			this.body
+		)})`;
 	}
 }
 
