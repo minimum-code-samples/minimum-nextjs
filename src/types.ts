@@ -67,16 +67,16 @@ export interface FlashMessage {
 	variant: AlertVariant;
 }
 
-interface HttpPayloadData {
+type HttpPayloadData = {
 	payload: any;
 	status: number;
-}
+};
 
-interface HttpPayloadMessage {
+type HttpPayloadMessage = {
 	completed: boolean;
 	message: string;
 	status: number;
-}
+};
 
 /**
  * The payload to send for HTTP responses.

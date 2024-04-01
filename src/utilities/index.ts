@@ -131,10 +131,7 @@ export function getFlashCookie(
  * @param s - The string to check for.
  */
 export function isAlertVariant(s: string): s is AlertVariant {
-	if (ALERT_VARIANTS.includes(s)) {
-		return true;
-	}
-	return false;
+	return ALERT_VARIANTS.includes(s);
 }
 
 /**

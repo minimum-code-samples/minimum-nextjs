@@ -1,8 +1,8 @@
 {
-	"editor.tabSize": 2,
-	"editor.stickyScroll.enabled": true,
+	"editor.detectIndentation": true,
 	"editor.insertSpaces": false,
-	"editor.detectIndentation": false,
 	"editor.indentSize": "tabSize",
-	"editor.wordWrapColumn": 80
+	"editor.wordWrapColumn": 80,
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode"
 }

@@ -3,6 +3,11 @@ $border-radius: 0.25rem;
 $btn-disabled-opacity: 0.4;
 
 :root {
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
 	--#{$prefix}p000: #{$p000};
 	--#{$prefix}p100: #{$p100};
 	--#{$prefix}p200: #{$p200};
