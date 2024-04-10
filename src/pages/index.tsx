@@ -19,12 +19,17 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
 	};
 };
 
-export default function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Home(
+	props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
 	return (
 		<>
 			<Head>
 				<title>Minimum Next.js</title>
-				<meta name="description" content="Minimum code to create a Next.js project." />
+				<meta
+					name="description"
+					content="Minimum code to create a Next.js project."
+				/>
 			</Head>
 			<main className="mt-5 container-fluid">
 				<h1 className="text-center">Minimum Next.js</h1>

@@ -15,6 +15,11 @@ export const COOKIE_AUTH_USER = 'min-nextjs_auth';
 export const COOKIE_FLASH = 'min-nextjs_flash';
 
 /**
+ * The default number of milliseconds before fetch requests throw errors due to timeout.
+ */
+export const DEFAULT_FETCH_TIMEOUT = 8000;
+
+/**
  * The generic separator value.
  */
 export const SEP = '||';
