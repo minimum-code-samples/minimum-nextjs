@@ -16,6 +16,7 @@ import { COOKIE_FLASH, DEFAULT_FETCH_TIMEOUT, SEP } from '@src/constants';
 import {
 	ALERT_VARIANTS,
 	AlertVariant,
+	ExpiredAuthError,
 	FetchError,
 	FlashMessage,
 	UnauthenticatedError,
@@ -68,7 +69,7 @@ export async function fetchJson(resource: string, options?: any) {
 	}
 
 	let timeout = DEFAULT_FETCH_TIMEOUT;
-	if (typeof options.timeout === 'number') {
+	if (typeof options?.timeout === 'number') {
 		timeout = options.timeout;
 	}
 
@@ -89,7 +90,11 @@ export async function fetchJson(resource: string, options?: any) {
 
 		const payload = await resp.json();
 
-		if (resp.status === 401 || resp.status === 403) {
+		if (resp.status === 403) {
+			throw new ExpiredAuthError();
+		}
+
+		if (resp.status === 401) {
 			throw new UnauthenticatedError(payload.data?.error?.name);
 		}
 

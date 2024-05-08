@@ -11,31 +11,46 @@ import { IncomingMessage, ServerResponse } from 'http';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { COOKIE_AUTH_USER } from '@src/constants';
+import {
+	COOKIE_AUTH_USER,
+	ERROR_1001,
+	ERROR_1002,
+	ERROR_1003,
+} from '@src/constants';
 import { logger } from '@src/lib/server/logger';
-import { HttpPayload, UnauthenticatedError } from '@src/types';
+import { AuthContext, HttpPayload, UnauthenticatedError } from '@src/types';
 import { extractJwt } from '@src/utilities';
 
 if (!process.env.JWT_AUDIENCE) {
-	console.error(`Environment variable JWT_HMAC needs to be set for user authentication.`);
+	console.error(
+		`Environment variable JWT_HMAC needs to be set for user authentication.`
+	);
 	process.exit(1);
 }
-const JWT_AUDIENCE: string[] = process.env.JWT_AUDIENCE.split(',').map((aud) => aud.trim());
+const JWT_AUDIENCE: string[] = process.env.JWT_AUDIENCE.split(',').map((aud) =>
+	aud.trim()
+);
 
 if (!process.env.JWT_HMAC_KEY) {
-	console.error(`Environment variable JWT_HMAC_KEY needs to be set for user authentication.`);
+	console.error(
+		`Environment variable JWT_HMAC_KEY needs to be set for user authentication.`
+	);
 	process.exit(1);
 }
 const JWT_HMAC_KEY: string = process.env.JWT_HMAC_KEY;
 
 if (!process.env.JWT_ISSUER) {
-	console.error(`Environment variable JWT_ISSUER needs to be set for user authentication.`);
+	console.error(
+		`Environment variable JWT_ISSUER needs to be set for user authentication.`
+	);
 	process.exit(1);
 }
 const JWT_ISSUER: string = process.env.JWT_ISSUER;
 
 if (!process.env.JWT_TTL_ACCESS) {
-	console.error(`Environment variable JWT_TTL_ACCESS needs to be set for user authentication.`);
+	console.error(
+		`Environment variable JWT_TTL_ACCESS needs to be set for user authentication.`
+	);
 	process.exit(1);
 }
 const JWT_TTL_ACCESS: string = process.env.JWT_TTL_ACCESS;
@@ -46,7 +61,10 @@ const JWT_TTL_ACCESS: string = process.env.JWT_TTL_ACCESS;
  * @param req - The incoming request object from `context`.
  * @param res - The outgoing response object from `context`.
  */
-export function clearAuthContext(req: IncomingMessage, res: ServerResponse): string | jwt.JwtPayload | null | void {
+export function clearAuthContext(
+	req: IncomingMessage,
+	res: ServerResponse
+): string | jwt.JwtPayload | null | void {
 	// Return the JWT in case it is needed.
 	const jot = getCookie(COOKIE_AUTH_USER, { req, res });
 
@@ -75,7 +93,7 @@ export async function getAuthContext(
 	req: NextApiRequest,
 	res: NextApiResponse,
 	mode?: 'cookie' | 'header'
-): Promise<jwt.JwtPayload> {
+): Promise<AuthContext> {
 	const _name = 'getAuthContext';
 
 	let authenticated = false;
@@ -129,7 +147,10 @@ export async function getAuthContext(
 		throw new UnauthenticatedError('JWT decoding failed');
 	}
 
-	return decoded.payload;
+	return {
+		id: decoded.payload.sub ?? '',
+		name: decoded.payload.name ?? '',
+	};
 }
 
 /**
@@ -137,8 +158,9 @@ export async function getAuthContext(
  *
  * @param sub - The `sub` field of the JWT. This is typically the UUID of the entity to authenticate.
  * @param name - The name of the user for convenience.
+ * @returns Returns a Promise that resolves with the token. It rejects with the error encountered, or with nothing if the token cannot be created.
  */
-export async function makeJwt(sub: string, name: string): Promise<string | undefined> {
+export async function makeJwt(sub: string, name: string): Promise<string> {
 	const payload = {
 		name,
 		sub,
@@ -157,6 +179,8 @@ export async function makeJwt(sub: string, name: string): Promise<string | undef
 			(err: Error | null, token?: string) => {
 				if (err) {
 					reject(err);
+				} else if (!token) {
+					reject();
 				} else {
 					resolve(token);
 				}
@@ -191,7 +215,10 @@ export async function verifyJwt(jot: string): Promise<jwt.Jwt | undefined> {
 	});
 }
 
-type NextContextApiHandler = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
+type NextContextApiHandler = (
+	req: NextApiRequest,
+	res: NextApiResponse
+) => Promise<void>;
 
 /**
  * The wrapper function around a HTTP request handler to add authentication check.
@@ -199,7 +226,12 @@ type NextContextApiHandler = (req: NextApiRequest, res: NextApiResponse) => Prom
  * @param handler - The HTTP request handler.
  * @param mode - Whether to check for the JWT in the cookie or the header. If not specified, the cookies are checked before the headers.
  */
-export function withAuth(handler: NextContextApiHandler, mode?: 'cookie' | 'header') {
+export function withAuthHandler(
+	handler: NextContextApiHandler,
+	mode?: 'cookie' | 'header'
+) {
+	const _name = 'withAuthHandler';
+
 	return async function (req: NextApiRequest, res: NextApiResponse) {
 		try {
 			await getAuthContext(req, res, mode);
@@ -207,32 +239,27 @@ export function withAuth(handler: NextContextApiHandler, mode?: 'cookie' | 'head
 			return handler(req, res);
 		} catch (err: any) {
 			if (err instanceof TokenExpiredError) {
-				const hp: HttpPayload = {
-					completed: false,
-					message: 'Session expired.',
-					status: 401,
-				};
-				res.status(401).json(hp);
-				return;
+				return res.status(403).json({
+					status: 403,
+					code: ERROR_1003,
+				} satisfies HttpPayload);
 			}
 
 			if (err instanceof UnauthenticatedError) {
-				const hp: HttpPayload = {
-					completed: false,
-					message: 'Authentication required.',
+				return res.status(401).json({
 					status: 401,
-				};
-				res.status(401).json(hp);
-				return;
+					code: ERROR_1002,
+				} satisfies HttpPayload);
 			}
 
-			const hp: HttpPayload = {
-				completed: false,
-				message: 'Authentication failure.',
+			logger.error(
+				`(${_name}) Failed to get auth context. (${err.toString()})`
+			);
+
+			return res.status(500).json({
 				status: 500,
-			};
-			res.status(500).json(hp);
-			return;
+				code: ERROR_1001,
+			} satisfies HttpPayload);
 		}
 	};
 }

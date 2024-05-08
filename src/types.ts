@@ -28,6 +28,29 @@ export interface AlertBody {
 }
 
 /**
+ * The authentication context to attach to a HTTP request.
+ */
+export interface AuthContext {
+	id: string;
+	name: string;
+}
+
+/**
+ * Describes an error where the authentication has expired.
+ */
+export class ExpiredAuthError extends Error {
+	constructor(message?: string) {
+		super(message);
+		this.name = 'ExpiredAuthError';
+
+		// Maintains proper stack trace for where the error was thrown (only available on V8)
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, UnauthenticatedError);
+		}
+	}
+}
+
+/**
  * The error class to throw when a HTTP response code is non-2xx.
  *
  * The `toString()` method is overridden to return the status code. The `body` member is also returned if available.
@@ -68,14 +91,14 @@ export interface FlashMessage {
 }
 
 type HttpPayloadData = {
-	payload: any;
 	status: number;
+	payload?: any;
 };
 
 type HttpPayloadMessage = {
-	completed: boolean;
-	message: string;
 	status: number;
+	code: string;
+	message?: string;
 };
 
 /**

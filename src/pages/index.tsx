@@ -3,7 +3,9 @@ import Head from 'next/head';
 import Alert from 'react-bootstrap/Alert';
 
 import { logger } from '@src/lib/server/logger';
-import { getFlashCookie } from '@src/utilities';
+import { HttpPayload } from '@src/types';
+import { fetchJson, getFlashCookie } from '@src/utilities';
+import { useEffect } from 'react';
 
 const _name = 'src/pages/index';
 
@@ -22,6 +24,16 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
 export default function Home(
 	props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
+	useEffect(() => {
+		fetchJson('/api/healthz')
+			.then((result: HttpPayload) => {
+				console.log(`result`, result);
+			})
+			.catch((err) => {
+				console.dir(err, { depth: 1 });
+			});
+	}, []);
+
 	return (
 		<>
 			<Head>
