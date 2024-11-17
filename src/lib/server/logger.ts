@@ -85,4 +85,28 @@ function _isPinoLevel(level: string): level is Level {
 	}
 }
 
-export { logger };
+function _relay(level: Level, message: string, ip: string, name?: string) {
+	let s = message;
+	if (name) {
+		s = `(${name}) ${message}`;
+	}
+
+	logger[level]({ ip }, s);
+}
+
+const L = {
+	trace: (message: string, ip: string, name?: string) =>
+		_relay('trace', message, ip, name),
+	debug: (message: string, ip: string, name?: string) =>
+		_relay('debug', message, ip, name),
+	info: (message: string, ip: string, name?: string) =>
+		_relay('info', message, ip, name),
+	warn: (message: string, ip: string, name?: string) =>
+		_relay('warn', message, ip, name),
+	error: (message: string, ip: string, name?: string) =>
+		_relay('error', message, ip, name),
+	fatal: (message: string, ip: string, name?: string) =>
+		_relay('fatal', message, ip, name),
+};
+
+export default L;

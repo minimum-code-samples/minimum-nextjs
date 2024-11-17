@@ -17,9 +17,9 @@ import {
 	ERROR_1002,
 	ERROR_1003,
 } from '@src/constants';
-import { logger } from '@src/lib/server/logger';
+import logger from '@src/lib/server/logger';
 import { AuthContext, HttpPayload, UnauthenticatedError } from '@src/types';
-import { extractJwt } from '@src/utilities';
+import { extractIp, extractJwt } from '@src/utilities';
 
 if (!process.env.JWT_AUDIENCE) {
 	console.error(
@@ -95,6 +95,7 @@ export async function getAuthContext(
 	mode?: 'cookie' | 'header'
 ): Promise<AuthContext> {
 	const _name = 'getAuthContext';
+	const _ip = extractIp(req);
 
 	let authenticated = false;
 	let jot;
@@ -106,7 +107,7 @@ export async function getAuthContext(
 		if (typeof jot === 'string' && jot) {
 			authenticated = true;
 		} else {
-			logger.trace(`(${_name}) Invalid authentication cookie. (${jot})`);
+			logger.debug(`Invalid authentication cookie. (${jot})`, _ip, _name);
 		}
 	}
 
@@ -117,7 +118,7 @@ export async function getAuthContext(
 		if (jot) {
 			authenticated = true;
 		} else {
-			logger.trace(`(${_name}) Invalid bearer token. (${bearer})`);
+			logger.debug(`Invalid bearer token. (${bearer})`, _ip, _name);
 		}
 	}
 
@@ -128,21 +129,21 @@ export async function getAuthContext(
 	let decoded;
 	try {
 		decoded = await verifyJwt(jot);
-		logger.trace(`(${_name}) Token is valid.`);
+		logger.trace(`Token is valid.`, _ip, _name);
 	} catch (err: any) {
 		if (err instanceof TokenExpiredError) {
-			logger.trace(`(${_name}) Token has expired. (${err})`);
+			logger.debug(`Token has expired. (${err})`, _ip, _name);
 
 			throw err; // Re-throw the error.
 		}
 		// Else.
-		logger.trace(`(${_name}) JWT verification failed. (${err})`);
+		logger.debug(`JWT verification failed. (${err})`, _ip, _name);
 
 		throw new UnauthenticatedError('JWT verification failed');
 	}
 
 	if (!decoded || typeof decoded.payload === 'string') {
-		logger.trace(`(${_name}) Failed to decode token.`);
+		logger.debug(`Failed to decode token.`, _ip, _name);
 
 		throw new UnauthenticatedError('JWT decoding failed');
 	}
@@ -233,6 +234,7 @@ export function withAuthHandler(
 	const _name = 'withAuthHandler';
 
 	return async function (req: NextApiRequest, res: NextApiResponse) {
+		const _ip = extractIp(req);
 		try {
 			await getAuthContext(req, res, mode);
 
@@ -253,7 +255,9 @@ export function withAuthHandler(
 			}
 
 			logger.error(
-				`(${_name}) Failed to get auth context. (${err.toString()})`
+				`Failed to get auth context. (${err.toString()})`,
+				_ip,
+				_name
 			);
 
 			return res.status(500).json({

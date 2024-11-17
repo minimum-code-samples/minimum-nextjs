@@ -2,15 +2,16 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Head from 'next/head';
 import Alert from 'react-bootstrap/Alert';
 
-import { logger } from '@src/lib/server/logger';
+import logger from '@src/lib/server/logger';
 import { HttpPayload } from '@src/types';
-import { fetchJson, getFlashCookie } from '@src/utilities';
+import { extractIp, fetchJson, getFlashCookie } from '@src/utilities';
 import { useEffect } from 'react';
 
 const _name = 'src/pages/index';
 
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
-	logger.trace(`(${_name}) Page requested.`);
+	const _ip = extractIp(context.req);
+	logger.trace(`Page requested.`, _ip, _name);
 
 	const flash = getFlashCookie(context.req, context.res);
 

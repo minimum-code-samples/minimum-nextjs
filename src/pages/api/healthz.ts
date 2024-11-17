@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { HTTP_GET } from '@src/constants';
-import { logger } from '@src/lib/server/logger';
+import logger from '@src/lib/server/logger';
 import { HttpPayload } from '@src/types';
+import { extractIp } from '@src/utilities';
 
 const _name = `pages/api/healthz`;
 
@@ -20,7 +21,8 @@ export default async function handler(
 }
 
 async function fn(req: NextApiRequest, res: NextApiResponse) {
-	logger.debug(`(${_name}) API requested.`);
+	const _ip = extractIp(req);
+	logger.debug(`API requested.`, _ip, _name);
 
 	return res.status(200).json({
 		status: 200,

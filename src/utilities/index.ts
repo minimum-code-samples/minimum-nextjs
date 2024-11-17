@@ -23,6 +23,28 @@ import {
 } from '@src/types';
 
 /**
+ * Extracts the IP address of the request.
+ *
+ * @param req - The standard HTTP request object.
+ * @returns Returns an empty string if no IP address is discerned.
+ */
+export function extractIp(req: IncomingMessage): string {
+	const xForwarded = 'x-forwarded-for';
+
+	if (req.headers[xForwarded]) {
+		let forwarded = req.headers[xForwarded];
+		if (typeof forwarded === 'string') {
+			forwarded = forwarded.split(',');
+		}
+		if (forwarded.length > 0) {
+			return forwarded[0];
+		}
+	}
+
+	return req.socket.remoteAddress ?? '';
+}
+
+/**
  * Helper function to extract the JWT from a Authorization header.
  *
  * @param bearer - The authorization header from the HTTP request.
